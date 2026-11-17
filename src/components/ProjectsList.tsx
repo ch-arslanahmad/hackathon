@@ -171,6 +171,16 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
                       )}
                     </span>
                   </div>
+
+                  <div className="pt-1">
+                    <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium text-slate-400">
+                      <span>Project progress</span>
+                      <span className="text-emerald-300">{project.completedTaskCount ?? 0}/{project.taskCount ?? 0} complete · {project.completionPercentage ?? 0}%</span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+                      <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-500" style={{ width: `${project.completionPercentage ?? 0}%` }} />
+                    </div>
+                  </div>
                 </div>
               </div>
 

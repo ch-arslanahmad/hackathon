@@ -3,6 +3,7 @@ import type {
   ProjectWithDetails,
   TaskWithAssignee,
   TranscriptCreationResult,
+  TaskStatus,
 } from '../types/index.js';
 
 const TOKEN_KEY = 'novaworks_token';
@@ -91,6 +92,13 @@ export const api = {
 
   async getMyTasks(): Promise<{ tasks: TaskWithAssignee[] }> {
     return apiFetch<{ tasks: TaskWithAssignee[] }>('/api/tasks/my');
+  },
+
+  async updateTaskStatus(taskId: string, status: TaskStatus): Promise<{ task: TaskWithAssignee }> {
+    return apiFetch<{ task: TaskWithAssignee }>(`/api/tasks/${taskId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
   },
 
   async createFromTranscript(transcript: string): Promise<TranscriptCreationResult> {

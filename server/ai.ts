@@ -495,6 +495,7 @@ export function validateAndTransformAIOutput(rawProjects: AIProjectInput[]): Val
         assigneeId: agent ? agent.id : rawTask.assigneeId,
         deadline: rawTask.deadline,
         estimatedHours: Number(rawTask.estimatedHours),
+        status: 'TODO',
         createdAt: new Date().toISOString(),
       };
 

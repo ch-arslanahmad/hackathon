@@ -3,7 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { getInitialDemoUsers, SUPPLIED_TEN_ACCOUNTS, DEMO_PASSWORD } from './seedData.js';
 import { hashPassword } from './crypto.js';
-import type { User, UserWithCredentials, Project, Task, ProjectWithDetails, TaskWithAssignee } from '../src/types/index.js';
+import type { User, UserWithCredentials, Project, Task, TaskStatus, ProjectWithDetails, TaskWithAssignee } from '../src/types/index.js';
 
 interface DatabaseSchema {
   users: UserWithCredentials[];
@@ -38,6 +38,13 @@ class Database {
       if (fs.existsSync(DB_FILE)) {
         const content = fs.readFileSync(DB_FILE, 'utf-8');
         this.data = JSON.parse(content);
+        let migrated = false;
+        this.data.tasks = this.data.tasks.map((task) => {
+          if (task.status) return task;
+          migrated = true;
+          return { ...task, status: 'TODO' };
+        });
+        if (migrated) this.persist();
       } else {
         // Initialize with default demo users
         this.data = {
@@ -259,6 +266,23 @@ class Database {
     });
   }
 
+  public updateTaskStatus(user: User, taskId: string, status: TaskStatus): TaskWithAssignee | null {
+    this.ensureLoaded();
+    const task = this.data.tasks.find((item) => item.id === taskId);
+    if (!task) return null;
+
+    const project = this.data.projects.find((item) => item.id === task.projectId);
+    const canManage = user.role === 'ADMIN' || (user.role === 'MANAGER' && project?.managerId === user.id);
+    const isAssignee = user.role === 'AGENT' && task.assigneeId === user.id;
+    if (!canManage && !isAssignee) return null;
+
+    task.status = status;
+    task.updatedAt = new Date().toISOString();
+    task.completedAt = status === 'DONE' ? task.updatedAt : undefined;
+    this.persist();
+    return this.enrichTask(task, project);
+  }
+
   // --- Atomic Transcript Save Transaction ---
   public saveProjectsAndTasksTransaction(
     newProjects: Project[],
@@ -304,7 +328,7 @@ class Database {
 
       // Append
       this.data.projects.push(...newProjects);
-      this.data.tasks.push(...newTasks);
+      this.data.tasks.push(...newTasks.map((task) => ({ ...task, status: task.status || 'TODO' })));
       this.persist();
 
       return { projects: newProjects, tasks: newTasks };
@@ -341,6 +365,8 @@ class Database {
 
     const allProjectTasks = this.data.tasks.filter((t) => t.projectId === project.id);
     const totalHours = allProjectTasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
+    const completedTaskCount = allProjectTasks.filter((task) => task.status === 'DONE').length;
+    const inProgressTaskCount = allProjectTasks.filter((task) => task.status === 'IN_PROGRESS').length;
 
     return {
       ...project,
@@ -348,6 +374,9 @@ class Database {
       tasks,
       taskCount: allProjectTasks.length,
       totalHours,
+      completedTaskCount,
+      inProgressTaskCount,
+      completionPercentage: allProjectTasks.length ? Math.round((completedTaskCount / allProjectTasks.length) * 100) : 0,
     };
   }
 

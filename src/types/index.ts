@@ -1,4 +1,5 @@
 export type UserRole = 'ADMIN' | 'MANAGER' | 'AGENT';
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE';
 
 export interface User {
   id: string; // e.g. "ADMIN", "PM01", "DEV01"
@@ -32,6 +33,9 @@ export interface Task {
   assigneeId: string;
   deadline: string; // YYYY-MM-DD
   estimatedHours: number;
+  status: TaskStatus;
+  completedAt?: string;
+  updatedAt?: string;
   createdAt?: string;
 }
 
@@ -40,6 +44,9 @@ export interface ProjectWithDetails extends Project {
   tasks?: TaskWithAssignee[];
   taskCount?: number;
   totalHours?: number;
+  completedTaskCount?: number;
+  inProgressTaskCount?: number;
+  completionPercentage?: number;
 }
 
 export interface TaskWithAssignee extends Task {

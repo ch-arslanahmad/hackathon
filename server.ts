@@ -7,7 +7,7 @@ import { createServer as createViteServer } from 'vite';
 import { db } from './server/db.js';
 import { verifyPassword } from './server/crypto.js';
 import { processTranscriptWithAI } from './server/ai.js';
-import type { User } from './src/types/index.js';
+import type { TaskStatus, User } from './src/types/index.js';
 
 dotenv.config();
 
@@ -162,6 +162,19 @@ app.get('/api/tasks/my', requireAuth, (req: Request, res: Response) => {
   const user: User = (req as any).user;
   const tasks = db.getMyTasks(user);
   return res.json({ tasks });
+});
+
+app.patch('/api/tasks/:id/status', requireAuth, (req: Request, res: Response) => {
+  const { status } = req.body as { status?: TaskStatus };
+  if (!status || !['TODO', 'IN_PROGRESS', 'DONE'].includes(status)) {
+    return res.status(400).json({ error: 'Status must be TODO, IN_PROGRESS, or DONE.' });
+  }
+
+  const task = db.updateTaskStatus((req as any).user, req.params.id, status);
+  if (!task) {
+    return res.status(403).json({ error: 'You do not have permission to update this task.' });
+  }
+  return res.json({ task });
 });
 
 // ----------------- TRANSCRIPT AI (ADMIN ONLY) -----------------

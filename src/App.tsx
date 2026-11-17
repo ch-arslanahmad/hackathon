@@ -18,6 +18,7 @@ import type {
   User,
   ProjectWithDetails,
   TaskWithAssignee,
+  TaskStatus,
   TranscriptCreationResult,
 } from './types/index.js';
 import { ShieldAlert, X } from 'lucide-react';
@@ -37,6 +38,7 @@ export default function App() {
   const [team, setTeam] = useState<User[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
   const [isProcessingTranscript, setIsProcessingTranscript] = useState(false);
+  const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
   const [isDemoGuideOpen, setIsDemoGuideOpen] = useState(false);
   const [accessDeniedMessage, setAccessDeniedMessage] = useState<string | null>(null);
@@ -197,6 +199,23 @@ export default function App() {
     }
   };
 
+  const handleTaskStatusChange = async (taskId: string, status: TaskStatus) => {
+    setUpdatingTaskId(taskId);
+    setAccessDeniedMessage(null);
+    try {
+      const { task } = await api.updateTaskStatus(taskId, status);
+      setAgentTasks((current) => current.map((item) => (item.id === taskId ? task : item)));
+      setSelectedProject((current) => current
+        ? { ...current, tasks: current.tasks?.map((item) => (item.id === taskId ? task : item)) }
+        : current);
+      await loadData();
+    } catch (err: any) {
+      setAccessDeniedMessage(err.message || 'Unable to update task status.');
+    } finally {
+      setUpdatingTaskId(null);
+    }
+  };
+
   if (isInitializing) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
@@ -245,6 +264,8 @@ export default function App() {
           <ProjectDetailView
             project={selectedProject}
             currentUser={currentUser}
+            onUpdateTaskStatus={handleTaskStatusChange}
+            updatingTaskId={updatingTaskId}
             onBack={() => {
               setSelectedProjectId(null);
               setSelectedProject(null);
@@ -264,6 +285,8 @@ export default function App() {
             currentUser={currentUser}
             isLoading={dataLoading}
             onOpenProject={(projId) => setSelectedProjectId(projId)}
+            onUpdateTaskStatus={handleTaskStatusChange}
+            updatingTaskId={updatingTaskId}
           />
         ) : currentTab === 'transcript' ? (
           <TranscriptCreator

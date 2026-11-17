@@ -7,23 +7,44 @@ import {
   User,
   ShieldCheck,
   Building,
+  CheckCircle2,
+  Circle,
+  PlayCircle,
 } from 'lucide-react';
-import type { TaskWithAssignee, User as UserType } from '../types/index.js';
+import type { TaskStatus, TaskWithAssignee, User as UserType } from '../types/index.js';
 
 interface AgentTasksViewProps {
   tasks: TaskWithAssignee[];
   currentUser: UserType;
   isLoading: boolean;
   onOpenProject?: (projectId: string) => void;
+  onUpdateTaskStatus: (taskId: string, status: TaskStatus) => Promise<void>;
+  updatingTaskId: string | null;
 }
+
+const statusOptions: Array<{ value: TaskStatus; label: string }> = [
+  { value: 'TODO', label: 'To do' },
+  { value: 'IN_PROGRESS', label: 'In progress' },
+  { value: 'DONE', label: 'Done' },
+];
+
+const statusStyle: Record<TaskStatus, string> = {
+  TODO: 'border-slate-700 bg-slate-800 text-slate-300',
+  IN_PROGRESS: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
+  DONE: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+};
 
 export const AgentTasksView: React.FC<AgentTasksViewProps> = ({
   tasks,
   currentUser,
   isLoading,
   onOpenProject,
+  onUpdateTaskStatus,
+  updatingTaskId,
 }) => {
   const totalHours = tasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
+  const completedTasks = tasks.filter((task) => task.status === 'DONE').length;
+  const progress = tasks.length ? Math.round((completedTasks / tasks.length) * 100) : 0;
 
   return (
     <div className="page-enter space-y-6">
@@ -43,6 +64,15 @@ export const AgentTasksView: React.FC<AgentTasksViewProps> = ({
             Showing exclusively tasks assigned to {currentUser.name} ({currentUser.id}). Other
             developers' tasks are inaccessible.
           </p>
+          <div className="mt-4 max-w-md">
+            <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium text-slate-400">
+              <span>Personal progress</span>
+              <span className="text-cyan-300">{completedTasks}/{tasks.length} complete · {progress}%</span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500" style={{ width: `${progress}%` }} />
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800 shrink-0">
@@ -85,7 +115,7 @@ export const AgentTasksView: React.FC<AgentTasksViewProps> = ({
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between hover:border-slate-700 transition"
+              className={`bg-slate-900/90 border rounded-2xl p-5 shadow-xl flex flex-col justify-between transition ${task.status === 'DONE' ? 'border-emerald-500/25' : 'border-slate-800 hover:border-slate-700'}`}
             >
               <div>
                 {/* Project & Client Pill */}
@@ -106,6 +136,33 @@ export const AgentTasksView: React.FC<AgentTasksViewProps> = ({
                 <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
                   {task.description || 'No specific description provided.'}
                 </p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusStyle[task.status]}`}>
+                  {task.status === 'DONE' ? <CheckCircle2 className="h-3.5 w-3.5" /> : task.status === 'IN_PROGRESS' ? <PlayCircle className="h-3.5 w-3.5" /> : <Circle className="h-3.5 w-3.5" />}
+                  {statusOptions.find((option) => option.value === task.status)?.label}
+                </span>
+                <label className="sr-only" htmlFor={`status-${task.id}`}>Update status for {task.title}</label>
+                <select
+                  id={`status-${task.id}`}
+                  value={task.status}
+                  disabled={updatingTaskId === task.id}
+                  onChange={(event) => onUpdateTaskStatus(task.id, event.target.value as TaskStatus)}
+                  className="rounded-lg border border-slate-700 bg-slate-950 px-2 py-1 text-[11px] font-medium text-slate-200 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                </select>
+                {task.status !== 'DONE' && (
+                  <button
+                    type="button"
+                    disabled={updatingTaskId === task.id}
+                    onClick={() => onUpdateTaskStatus(task.id, 'DONE')}
+                    className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-500/10 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Mark done
+                  </button>
+                )}
               </div>
 
               {/* Footer Meta */}

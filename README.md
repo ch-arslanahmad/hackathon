@@ -55,6 +55,7 @@ This project was built during **THE INFINITY HACK '26** hackathon, organized by 
 | **Role-Based Access Control** | Admin, Manager, and Agent roles, enforced on the **server**, not just hidden in the UI |
 | **Team Directory** | See everyone on the team in one place |
 | **Project & Task Management** | Browse projects and drill into their tasks |
+| **Task Execution Tracking** | Agents and project leads can move tasks through To do, In progress, and Done, with live project completion progress |
 | **Persistent Data** | Your data survives refreshes and restarts (local JSON database with atomic writes) |
 
 ---

@@ -8,22 +8,42 @@ import {
   ShieldCheck,
   User,
   AlertCircle,
+  Circle,
+  PlayCircle,
 } from 'lucide-react';
-import type { ProjectWithDetails, User as UserType } from '../types/index.js';
+import type { ProjectWithDetails, TaskStatus, User as UserType } from '../types/index.js';
 
 interface ProjectDetailViewProps {
   project: ProjectWithDetails;
   currentUser: UserType;
   onBack: () => void;
+  onUpdateTaskStatus: (taskId: string, status: TaskStatus) => Promise<void>;
+  updatingTaskId: string | null;
 }
+
+const statusOptions: Array<{ value: TaskStatus; label: string }> = [
+  { value: 'TODO', label: 'To do' },
+  { value: 'IN_PROGRESS', label: 'In progress' },
+  { value: 'DONE', label: 'Done' },
+];
+
+const statusStyle: Record<TaskStatus, string> = {
+  TODO: 'border-slate-700 bg-slate-800 text-slate-300',
+  IN_PROGRESS: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
+  DONE: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+};
 
 export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   project,
   currentUser,
   onBack,
+  onUpdateTaskStatus,
+  updatingTaskId,
 }) => {
   const tasks = project.tasks || [];
   const totalTasksHours = tasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
+  const completedTasks = tasks.filter((task) => task.status === 'DONE').length;
+  const projectProgress = project.taskCount ? project.completionPercentage ?? 0 : 0;
 
   return (
     <div className="page-enter space-y-6">
@@ -72,6 +92,20 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               </span>
               <span className="text-2xl font-bold text-indigo-400 font-mono">{totalTasksHours} hrs</span>
             </div>
+            <div className="text-right border-l md:border-l-0 md:border-t border-slate-800 pl-3 md:pl-0 md:pt-2">
+              <span className="text-[10px] uppercase font-semibold text-slate-400 block">Progress</span>
+              <span className="text-2xl font-bold text-emerald-400 font-mono">{projectProgress}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 max-w-3xl">
+          <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium text-slate-400">
+            <span>{completedTasks} of {tasks.length} visible tasks complete</span>
+            <span className="text-emerald-300">{projectProgress}% project progress</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+            <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-500" style={{ width: `${projectProgress}%` }} />
           </div>
         </div>
 
@@ -118,6 +152,10 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-cyan-400 font-semibold">#{idx + 1}</span>
                     <h3 className="text-base font-semibold text-white">{task.title}</h3>
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusStyle[task.status]}`}>
+                      {task.status === 'DONE' ? <CheckCircle2 className="h-3 w-3" /> : task.status === 'IN_PROGRESS' ? <PlayCircle className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
+                      {statusOptions.find((option) => option.value === task.status)?.label}
+                    </span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
                     {task.description || 'No additional scope description.'}
@@ -155,6 +193,18 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                     <span className="font-mono text-indigo-300 font-bold">
                       {task.estimatedHours} hrs
                     </span>
+                  </div>
+                  <div className="flex items-center rounded-lg border border-slate-800 bg-slate-950/60 px-2 py-1.5">
+                    <label className="sr-only" htmlFor={`detail-status-${task.id}`}>Update status for {task.title}</label>
+                    <select
+                      id={`detail-status-${task.id}`}
+                      value={task.status}
+                      disabled={updatingTaskId === task.id}
+                      onChange={(event) => onUpdateTaskStatus(task.id, event.target.value as TaskStatus)}
+                      className="max-w-28 bg-transparent text-[11px] font-semibold text-slate-200 outline-none disabled:cursor-wait disabled:opacity-60"
+                    >
+                      {statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                    </select>
                   </div>
                 </div>
               </div>
