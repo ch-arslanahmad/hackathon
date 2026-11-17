@@ -209,7 +209,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div className="app-shell min-h-screen text-slate-100 font-sans">
       <Navbar
         currentUser={currentUser}
         currentTab={currentTab}
@@ -219,8 +219,8 @@ export default function App() {
         onOpenDemoGuide={() => setIsDemoGuideOpen(true)}
       />
 
-      <main className={`min-h-screen px-4 pb-8 pt-24 sm:px-6 lg:px-8 ${currentUser ? 'md:pl-72' : ''}`}>
-        <div className="mx-auto w-full max-w-7xl">
+      <main className={`min-h-screen px-4 pb-8 pt-24 sm:px-6 lg:px-8 ${currentUser ? 'md:pl-72 lg:pl-72' : ''}`}>
+        <div className="page-enter mx-auto w-full max-w-7xl">
         {accessDeniedMessage && (
           <div className="mb-6 p-4 rounded-2xl bg-rose-950/80 border border-rose-800 text-rose-200 flex items-center justify-between shadow-xl">
             <div className="flex items-center gap-3">
@@ -282,7 +282,7 @@ export default function App() {
         </div>
       </main>
 
-      <footer className={`border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500 ${currentUser ? 'md:pl-64' : ''}`}>
+      <footer className={`border-t border-slate-800 bg-slate-950/70 py-6 text-center text-xs text-slate-500 ${currentUser ? 'md:pl-64' : ''}`}>
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 sm:flex-row sm:px-6 lg:px-8">
           <span>NovaWorks Technologies CRM — THE INFINITY HACK ’26</span>
           <div className="flex items-center gap-4">

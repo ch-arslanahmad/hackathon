@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 h-16 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md">
+      <header className="fixed inset-x-0 top-0 z-50 h-16 border-b border-slate-800/80 bg-slate-950/90 shadow-lg shadow-black/20 backdrop-blur-xl">
         <div className="mx-auto flex h-full items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             {currentUser && (
@@ -106,20 +106,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
                 aria-expanded={isMobileMenuOpen}
                 onClick={() => setIsMobileMenuOpen((open) => !open)}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-novaworks-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue md:hidden"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue md:hidden"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             )}
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-novaworks-navy text-sm font-bold tracking-wide text-white shadow-md shadow-novaworks-navy/15">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 text-sm font-bold tracking-wide text-white shadow-lg shadow-cyan-500/20">
                 NW
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-bold tracking-tight text-novaworks-navy sm:text-base">
+                <p className="truncate text-sm font-bold tracking-tight text-white sm:text-base">
                   NovaWorks <span className="hidden sm:inline">Project Manager</span>
                 </p>
-                <p className="hidden text-[11px] text-slate-500 sm:block">Meeting-to-Execution System</p>
+                <p className="hidden text-[11px] text-slate-400 sm:block">Meeting-to-Execution System</p>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onOpenDemoGuide}
-              className="inline-flex h-9 items-center gap-2 rounded-xl border border-novaworks-lavender-strong bg-novaworks-lavender px-2.5 text-xs font-semibold text-novaworks-navy transition hover:bg-novaworks-lavender-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue sm:px-3"
+              className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-2.5 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue sm:px-3"
               title="Open Organizer / Judge Verification Guide"
             >
               <Terminal className="h-4 w-4" />
@@ -143,33 +143,33 @@ export const Navbar: React.FC<NavbarProps> = ({
                     aria-expanded={isAccountMenuOpen}
                     aria-haspopup="menu"
                     onClick={() => setIsAccountMenuOpen((open) => !open)}
-                    className="inline-flex h-10 max-w-[190px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue sm:px-3"
+                    className="inline-flex h-10 max-w-[190px] items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-2 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue sm:px-3"
                   >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-novaworks-lavender text-xs font-bold text-novaworks-navy">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cyan-500/15 text-xs font-bold text-cyan-300">
                       {currentUser.name.charAt(0)}
                     </span>
                     <span className="hidden min-w-0 text-left lg:block">
-                      <span className="block truncate text-xs font-semibold text-novaworks-navy">
+                      <span className="block truncate text-xs font-semibold text-slate-100">
                         {currentUser.name}
                       </span>
-                      <span className="block text-[10px] text-slate-500">
+                      <span className="block text-[10px] text-slate-400">
                         {currentUser.role === 'ADMIN' ? 'Administrator' : currentUser.role === 'MANAGER' ? 'Manager' : 'Agent'}
                       </span>
                     </span>
-                    <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
+                    <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
                   </button>
 
                   {isAccountMenuOpen && (
                     <div
                       role="menu"
                       aria-label="Switch demo account"
-                      className="absolute right-0 top-12 z-50 w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-card"
+                      className="absolute right-0 top-12 z-50 w-72 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 p-2 shadow-card"
                     >
                       <div className="px-2 py-2">
-                        <p className="text-xs font-semibold text-novaworks-navy">Quick account switch</p>
-                        <p className="mt-0.5 truncate text-[11px] text-slate-500">{currentUser.email}</p>
+                        <p className="text-xs font-semibold text-slate-100">Quick account switch</p>
+                        <p className="mt-0.5 truncate text-[11px] text-slate-400">{currentUser.email}</p>
                       </div>
-                      <div className="max-h-[min(60vh,26rem)] space-y-0.5 overflow-y-auto border-t border-slate-100 pt-2">
+                      <div className="max-h-[min(60vh,26rem)] space-y-0.5 overflow-y-auto border-t border-slate-800 pt-2">
                         {demoAccounts.map((account) => (
                           <button
                             key={account.email}
@@ -179,10 +179,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                               setIsAccountMenuOpen(false);
                               onQuickSwitchUser(account.email);
                             }}
-                            className="flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs text-slate-700 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue"
+                            className="flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs text-slate-300 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue"
                           >
                             <span className="truncate">{account.label}</span>
-                            <span className="shrink-0 rounded-full bg-novaworks-lavender px-2 py-0.5 text-[9px] font-bold tracking-wide text-novaworks-navy">
+                            <span className="shrink-0 rounded-full bg-slate-800 px-2 py-0.5 text-[9px] font-bold tracking-wide text-cyan-300">
                               {account.role}
                             </span>
                           </button>
@@ -195,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={onLogout}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                   title="Log out"
                   aria-label="Log out"
                 >
@@ -209,14 +209,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {currentUser && (
         <>
-          <aside className="fixed bottom-0 left-0 top-16 z-30 hidden w-64 flex-col border-r border-slate-200 bg-white px-4 py-6 md:flex">
+          <aside className="fixed bottom-0 left-0 top-16 z-30 hidden w-64 flex-col border-r border-slate-800 bg-slate-950/70 px-4 py-6 backdrop-blur-xl md:flex">
             {navigation}
-            <div className="mt-auto rounded-2xl border border-novaworks-lavender-strong/70 bg-novaworks-lavender/60 p-4">
-              <div className="mb-2 flex items-center gap-2 text-novaworks-navy">
+            <div className="mt-auto rounded-2xl border border-cyan-500/15 bg-cyan-500/5 p-4">
+              <div className="mb-2 flex items-center gap-2 text-cyan-200">
                 <Shield className="h-4 w-4" />
                 <span className="text-xs font-semibold">NovaWorks Workspace</span>
               </div>
-              <p className="text-[11px] leading-relaxed text-slate-600">
+              <p className="text-[11px] leading-relaxed text-slate-400">
                 Your workspace is tailored to your {currentUser.role.toLowerCase()} role.
               </p>
             </div>
@@ -228,16 +228,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 aria-label="Close navigation menu"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="absolute inset-0 h-full w-full bg-novaworks-navy/30 backdrop-blur-[2px]"
+                className="absolute inset-0 h-full w-full bg-slate-950/75 backdrop-blur-[2px]"
               />
-              <aside className="relative flex h-full w-[min(19rem,85vw)] flex-col border-r border-slate-200 bg-white px-4 py-6 shadow-card">
+              <aside className="relative flex h-full w-[min(19rem,85vw)] flex-col border-r border-slate-800 bg-slate-950 px-4 py-6 shadow-card">
                 {navigation}
-                <div className="mt-auto rounded-2xl border border-novaworks-lavender-strong/70 bg-novaworks-lavender/60 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-novaworks-navy">
+                <div className="mt-auto rounded-2xl border border-cyan-500/15 bg-cyan-500/5 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-cyan-200">
                     <Shield className="h-4 w-4" />
                     <span className="text-xs font-semibold">NovaWorks Workspace</span>
                   </div>
-                  <p className="text-[11px] leading-relaxed text-slate-600">
+                  <p className="text-[11px] leading-relaxed text-slate-400">
                     Your workspace is tailored to your {currentUser.role.toLowerCase()} role.
                   </p>
                 </div>
@@ -264,11 +264,11 @@ const NavItem: React.FC<NavItemProps> = ({ active, icon, label, onClick }) => (
     aria-current={active ? 'page' : undefined}
     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue ${
       active
-        ? 'bg-novaworks-lavender text-novaworks-navy shadow-sm'
-        : 'text-slate-600 hover:bg-slate-100 hover:text-novaworks-navy'
+        ? 'bg-cyan-400/10 text-cyan-200 shadow-sm ring-1 ring-cyan-400/10'
+        : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-100'
     }`}
   >
-    <span className={active ? 'text-novaworks-navy' : 'text-slate-400'}>{icon}</span>
+    <span className={active ? 'text-cyan-300' : 'text-slate-500'}>{icon}</span>
     {label}
   </button>
 );

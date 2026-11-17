@@ -26,7 +26,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   const totalTasksHours = tasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-6">
       {/* Back button */}
       <div>
         <button

@@ -48,7 +48,7 @@ export const TeamDirectoryView: React.FC<TeamDirectoryViewProps> = ({ team, isLo
   };
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-6">
       {/* Header */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -68,7 +68,7 @@ export const TeamDirectoryView: React.FC<TeamDirectoryViewProps> = ({ team, isLo
         </div>
 
         {/* Role Filters */}
-        <div className="flex items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800 shrink-0 text-xs font-medium">
+        <div className="flex max-w-full items-center gap-1.5 overflow-x-auto bg-slate-950/80 p-1.5 rounded-xl border border-slate-800 shrink-0 text-xs font-medium">
           <button
             onClick={() => setSelectedRoleFilter('ALL')}
             className={`px-3 py-1.5 rounded-lg transition ${

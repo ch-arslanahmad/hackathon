@@ -26,7 +26,7 @@ export const AgentTasksView: React.FC<AgentTasksViewProps> = ({
   const totalHours = tasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-6">
       {/* Header */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

@@ -40,7 +40,7 @@ export const ProjectsList: React.FC<ProjectsListProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-6">
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-6">
         <div>
