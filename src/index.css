@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@theme {
+  --color-novaworks-navy: #172554;
+  --color-novaworks-blue: #2563eb;
+  --color-novaworks-lavender: #eef2ff;
+  --color-novaworks-lavender-strong: #c7d2fe;
+  --shadow-card: 0 12px 30px rgb(15 23 42 / 0.10);
+}

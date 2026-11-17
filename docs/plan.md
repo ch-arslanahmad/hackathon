@@ -4,7 +4,7 @@
 
 | Decision | Choice |
 | :---- | :---- |
-| Project | NovaWorks AI Project Manager (Team Pokie Builders) |
+| Project | NovaWorks AI Project Manager |
 | Frontend | React 19 + Vite + TypeScript + Tailwind CSS |
 | Backend | Node.js + Express + TypeScript (`tsx`, single `server.ts`) |
 | Database | Persistent local JSON file with atomic writes (`data/novaworks.json`) |

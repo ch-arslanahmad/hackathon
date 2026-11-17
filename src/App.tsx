@@ -28,23 +28,19 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Navigation & View State
   const [currentTab, setCurrentTab] = useState<'projects' | 'directory' | 'my-tasks' | 'transcript'>('projects');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<ProjectWithDetails | null>(null);
 
-  // Data State
   const [projects, setProjects] = useState<ProjectWithDetails[]>([]);
   const [agentTasks, setAgentTasks] = useState<TaskWithAssignee[]>([]);
   const [team, setTeam] = useState<User[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
   const [isProcessingTranscript, setIsProcessingTranscript] = useState(false);
 
-  // Modals & Banners
   const [isDemoGuideOpen, setIsDemoGuideOpen] = useState(false);
   const [accessDeniedMessage, setAccessDeniedMessage] = useState<string | null>(null);
 
-  // 1. Initial Authentication Check
   useEffect(() => {
     async function checkAuth() {
       try {
@@ -56,7 +52,6 @@ export default function App() {
           setCurrentTab('projects');
         }
       } catch {
-        // Not authenticated yet
         authStorage.clearToken();
         setCurrentUser(null);
       } finally {
@@ -66,7 +61,6 @@ export default function App() {
     checkAuth();
   }, []);
 
-  // 2. Fetch data when user or tab changes
   const loadData = useCallback(async () => {
     if (!currentUser) return;
     setDataLoading(true);
@@ -100,7 +94,6 @@ export default function App() {
     loadData();
   }, [loadData]);
 
-  // Load single project detail when selected
   useEffect(() => {
     if (!selectedProjectId || !currentUser) {
       setSelectedProject(null);
@@ -216,8 +209,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Navigation */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <Navbar
         currentUser={currentUser}
         currentTab={currentTab}
@@ -225,12 +217,10 @@ export default function App() {
         onLogout={handleLogout}
         onQuickSwitchUser={handleQuickSwitchUser}
         onOpenDemoGuide={() => setIsDemoGuideOpen(true)}
-        onResetDb={handleResetData}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Access Denied Toast/Alert */}
+      <main className={`min-h-screen px-4 pb-8 pt-24 sm:px-6 lg:px-8 ${currentUser ? 'md:pl-72' : ''}`}>
+        <div className="mx-auto w-full max-w-7xl">
         {accessDeniedMessage && (
           <div className="mb-6 p-4 rounded-2xl bg-rose-950/80 border border-rose-800 text-rose-200 flex items-center justify-between shadow-xl">
             <div className="flex items-center gap-3">
@@ -250,10 +240,8 @@ export default function App() {
         )}
 
         {!currentUser ? (
-          /* Login Screen */
           <LoginView onLogin={handleLogin} isLoading={authLoading} error={authError} />
         ) : selectedProjectId && selectedProject ? (
-          /* Project Detail Screen (FR 7.6) */
           <ProjectDetailView
             project={selectedProject}
             currentUser={currentUser}
@@ -263,7 +251,6 @@ export default function App() {
             }}
           />
         ) : currentTab === 'projects' ? (
-          /* Projects List Screen (FR 7.5 / Admin & Manager Home) */
           <ProjectsList
             projects={projects}
             currentUser={currentUser}
@@ -272,7 +259,6 @@ export default function App() {
             isLoading={dataLoading}
           />
         ) : currentTab === 'my-tasks' ? (
-          /* Agent My Tasks Screen (FR 7.7) */
           <AgentTasksView
             tasks={agentTasks}
             currentUser={currentUser}
@@ -280,7 +266,6 @@ export default function App() {
             onOpenProject={(projId) => setSelectedProjectId(projId)}
           />
         ) : currentTab === 'transcript' ? (
-          /* Transcript Creation Screen (FR 7.3 - Admin Only) */
           <TranscriptCreator
             onProcessTranscript={handleProcessTranscript}
             isProcessing={isProcessingTranscript}
@@ -292,19 +277,18 @@ export default function App() {
             existingProjectCount={projects.length}
           />
         ) : currentTab === 'directory' ? (
-          /* Team Directory Screen (FR 7.4 - Read-only) */
           <TeamDirectoryView team={team} isLoading={dataLoading} />
         ) : null}
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/90 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <footer className={`border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500 ${currentUser ? 'md:pl-64' : ''}`}>
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 sm:flex-row sm:px-6 lg:px-8">
           <span>NovaWorks Technologies CRM — THE INFINITY HACK ’26</span>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsDemoGuideOpen(true)}
-              className="text-cyan-400 hover:text-cyan-300 transition"
+              className="text-blue-600 transition hover:text-blue-700"
             >
               Interactive Demo Checklist
             </button>
@@ -313,7 +297,6 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Organizer Demo Checklist Modal */}
       <DemoGuideModal
         isOpen={isDemoGuideOpen}
         onClose={() => setIsDemoGuideOpen(false)}

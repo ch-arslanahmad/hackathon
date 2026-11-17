@@ -4,7 +4,7 @@
 
 ### From meeting transcript to a fully planned project, in one click.
 
-**Built for THE INFINITY HACK '26 · 4th Position · Team Pokie Builders**
+**Built for THE INFINITY HACK '26**
 
 ![Hackathon](https://img.shields.io/badge/Infinity_Hack_'26-4th_Place-F59E0B?style=for-the-badge)
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -15,7 +15,7 @@
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
 ![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
 
-[Overview](#overview) · [Achievement](#achievement) · [Features](#features) · [Quick Start](#quick-start) · [Demo Accounts](#demo-accounts) · [Try the AI Flow](#try-the-ai-flow-in-2-minutes) · [Demo Video](#demo-video)
+[Overview](#overview) · [Features](#features) · [Quick Start](#quick-start) · [Demo Accounts](#demo-accounts) · [Try the AI Flow](#try-the-ai-flow-in-2-minutes)
 
 </div>
 
@@ -41,9 +41,7 @@ flowchart LR
 
 ## Achievement
 
-This project was built during **THE INFINITY HACK '26** hackathon, organized by **Infinity Wave** at **COMSATS University Islamabad, Lahore Campus**.
-
-**Our team secured 4th position** in the competition.
+This project was built during **THE INFINITY HACK '26** hackathon, organized by **Infinity Wave** at **UOL University Islamabad, Lahore Campus**.
 
 ---
 
@@ -245,22 +243,14 @@ No live deployment is configured. This submission runs as a local demo at **http
 
 ---
 
-## Demo Video
-
-**[Watch the demo video here](https://drive.google.com/drive/folders/1CtcwIEHagLc1E7pFcn6JdfqNiB8SiCuz)**
-
----
-
-## Team
-
-**Team Pokie Builders** (4th Position, THE INFINITY HACK '26)
+## Project Team
 
 | Member | Role |
 |---|---|
-| **Taha Nadeem** | Team Leader |
-| **Waqar Imran** | Team Member |
-| **Ahad Ata** | Team Member |
-| **Ahmer Ijaz** | Team Member |
+| **Muhammad Arslan** | Team Leader |
+| **Muhammad Zubair** | Team Member |
+| **Muhammad Hussain** | Team Member |
+| **Mirza Huzaifa Baig** | Team Member |
 
 <div align="center">
 

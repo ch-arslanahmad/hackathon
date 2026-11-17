@@ -1,25 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Sparkles,
-  LogOut,
-  Users,
   Briefcase,
   CheckSquare,
-  ShieldAlert,
+  ChevronDown,
+  LogOut,
+  Menu,
+  Shield,
+  Sparkles,
   Terminal,
-  RefreshCw,
+  Users,
+  X,
 } from 'lucide-react';
 import type { User } from '../types/index.js';
 
+type AppTab = 'projects' | 'directory' | 'my-tasks' | 'transcript';
+
 interface NavbarProps {
   currentUser: User | null;
-  currentTab: 'projects' | 'directory' | 'my-tasks' | 'transcript';
-  onSelectTab: (tab: 'projects' | 'directory' | 'my-tasks' | 'transcript') => void;
+  currentTab: AppTab;
+  onSelectTab: (tab: AppTab) => void;
   onLogout: () => void;
   onQuickSwitchUser: (email: string) => void;
   onOpenDemoGuide: () => void;
-  onResetDb: () => void;
 }
+
+const demoAccounts = [
+  { label: 'Administrator', email: 'admin@novaworks.example', role: 'ADMIN' },
+  { label: 'Ayesha Khan · Web PM', email: 'ayesha@novaworks.example', role: 'MANAGER' },
+  { label: 'Bilal Ahmed · Mobile PM', email: 'bilal@novaworks.example', role: 'MANAGER' },
+  { label: 'Hina Malik · AI PM', email: 'hina@novaworks.example', role: 'MANAGER' },
+  { label: 'Ali Raza · Full-Stack', email: 'ali@novaworks.example', role: 'AGENT' },
+  { label: 'Hamza Shah · Backend/API', email: 'hamza@novaworks.example', role: 'AGENT' },
+  { label: 'Sara Noor · Flutter', email: 'sara@novaworks.example', role: 'AGENT' },
+  { label: 'Usman Tariq · Flutter QA', email: 'usman@novaworks.example', role: 'AGENT' },
+  { label: 'Zain Abbas · AI Dev', email: 'zain@novaworks.example', role: 'AGENT' },
+  { label: 'Maryam Asif · AI Docs', email: 'maryam@novaworks.example', role: 'AGENT' },
+];
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentUser,
@@ -28,280 +44,231 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   onQuickSwitchUser,
   onOpenDemoGuide,
-  onResetDb,
 }) => {
-  const getRoleBadge = (role?: string) => {
-    switch (role) {
-      case 'ADMIN':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/60">
-            Admin
-          </span>
-        );
-      case 'MANAGER':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/60">
-            Manager
-          </span>
-        );
-      case 'AGENT':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-950/60 text-cyan-300 border border-cyan-800/60">
-            Agent
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+
+  const navigation = (
+    <nav aria-label="Main navigation" className="space-y-1">
+      <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+        Workspace
+      </p>
+      <NavItem
+        active={currentTab === 'projects'}
+        icon={<Briefcase className="h-[18px] w-[18px]" />}
+        label={
+          currentUser?.role === 'ADMIN'
+            ? 'All Projects'
+            : currentUser?.role === 'MANAGER'
+              ? 'Assigned Projects'
+              : 'Active Projects'
+        }
+        onClick={() => selectTab('projects')}
+      />
+      {currentUser?.role === 'AGENT' && (
+        <NavItem
+          active={currentTab === 'my-tasks'}
+          icon={<CheckSquare className="h-[18px] w-[18px]" />}
+          label="My Tasks"
+          onClick={() => selectTab('my-tasks')}
+        />
+      )}
+      {currentUser?.role === 'ADMIN' && (
+        <NavItem
+          active={currentTab === 'transcript'}
+          icon={<Sparkles className="h-[18px] w-[18px]" />}
+          label="Create from Transcript"
+          onClick={() => selectTab('transcript')}
+        />
+      )}
+      <NavItem
+        active={currentTab === 'directory'}
+        icon={<Users className="h-[18px] w-[18px]" />}
+        label="Team Directory"
+        onClick={() => selectTab('directory')}
+      />
+    </nav>
+  );
+
+  function selectTab(tab: AppTab) {
+    onSelectTab(tab);
+    setIsMobileMenuOpen(false);
+  }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-900/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white font-bold">
-              NW
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-100 tracking-tight text-lg">NovaWorks CRM</span>
-                <span className="text-[10px] uppercase font-mono tracking-widest px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                  Infinity Hack '26
-                </span>
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 h-16 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex h-full items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            {currentUser && (
+              <button
+                type="button"
+                aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                aria-expanded={isMobileMenuOpen}
+                onClick={() => setIsMobileMenuOpen((open) => !open)}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-novaworks-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue md:hidden"
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            )}
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-novaworks-navy text-sm font-bold tracking-wide text-white shadow-md shadow-novaworks-navy/15">
+                NW
               </div>
-              <p className="text-xs text-slate-400">Meeting-to-Execution System</p>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold tracking-tight text-novaworks-navy sm:text-base">
+                  NovaWorks <span className="hidden sm:inline">Project Manager</span>
+                </p>
+                <p className="hidden text-[11px] text-slate-500 sm:block">Meeting-to-Execution System</p>
+              </div>
             </div>
           </div>
 
-          {/* Navigation Links */}
-          {currentUser && (
-            <nav className="hidden md:flex items-center space-x-1">
-              <button
-                onClick={() => onSelectTab('projects')}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  currentTab === 'projects'
-                    ? 'bg-slate-800 text-cyan-400 border border-slate-700'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                }`}
-              >
-                <Briefcase className="w-4 h-4" />
-                {currentUser.role === 'ADMIN'
-                  ? 'All Projects'
-                  : currentUser.role === 'MANAGER'
-                  ? 'Assigned Projects'
-                  : 'Active Projects'}
-              </button>
-
-              {currentUser.role === 'AGENT' && (
-                <button
-                  onClick={() => onSelectTab('my-tasks')}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                    currentTab === 'my-tasks'
-                      ? 'bg-slate-800 text-cyan-400 border border-slate-700'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                  }`}
-                >
-                  <CheckSquare className="w-4 h-4" />
-                  My Tasks
-                </button>
-              )}
-
-              {currentUser.role === 'ADMIN' && (
-                <button
-                  onClick={() => onSelectTab('transcript')}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                    currentTab === 'transcript'
-                      ? 'bg-slate-800 text-cyan-400 border border-slate-700'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                  }`}
-                >
-                  <Sparkles className="w-4 h-4 text-cyan-400" />
-                  Create from Transcript
-                </button>
-              )}
-
-              <button
-                onClick={() => onSelectTab('directory')}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  currentTab === 'directory'
-                    ? 'bg-slate-800 text-cyan-400 border border-slate-700'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                Team Directory
-              </button>
-            </nav>
-          )}
-
-          {/* Right Actions */}
-          <div className="flex items-center space-x-3">
-            {/* Quick Demo Verification Guide Trigger */}
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <button
+              type="button"
               onClick={onOpenDemoGuide}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-300 border border-indigo-700/60 transition shadow-sm"
+              className="inline-flex h-9 items-center gap-2 rounded-xl border border-novaworks-lavender-strong bg-novaworks-lavender px-2.5 text-xs font-semibold text-novaworks-navy transition hover:bg-novaworks-lavender-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue sm:px-3"
               title="Open Organizer / Judge Verification Guide"
             >
-              <Terminal className="w-3.5 h-3.5" />
+              <Terminal className="h-4 w-4" />
               <span className="hidden sm:inline">Demo Checklist</span>
             </button>
 
-            {currentUser ? (
-              <div className="flex items-center space-x-3">
-                {/* Fast Switcher for Demo accounts */}
-                <div className="relative group">
-                  <div className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 cursor-pointer">
-                    <div className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs border border-cyan-500/30">
+            {currentUser && (
+              <>
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-expanded={isAccountMenuOpen}
+                    aria-haspopup="menu"
+                    onClick={() => setIsAccountMenuOpen((open) => !open)}
+                    className="inline-flex h-10 max-w-[190px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue sm:px-3"
+                  >
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-novaworks-lavender text-xs font-bold text-novaworks-navy">
                       {currentUser.name.charAt(0)}
-                    </div>
-                    <div className="text-left hidden lg:block">
-                      <p className="text-xs font-medium text-slate-200 leading-none">{currentUser.name}</p>
-                      <p className="text-[10px] text-slate-400 leading-tight mt-0.5">{currentUser.email}</p>
-                    </div>
-                    {getRoleBadge(currentUser.role)}
-                  </div>
+                    </span>
+                    <span className="hidden min-w-0 text-left lg:block">
+                      <span className="block truncate text-xs font-semibold text-novaworks-navy">
+                        {currentUser.name}
+                      </span>
+                      <span className="block text-[10px] text-slate-500">
+                        {currentUser.role === 'ADMIN' ? 'Administrator' : currentUser.role === 'MANAGER' ? 'Manager' : 'Agent'}
+                      </span>
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
+                  </button>
 
-                  {/* Dropdown for quick account switching */}
-                  <div className="absolute right-0 mt-2 w-64 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-2 hidden group-hover:block transition z-50">
-                    <div className="px-2 py-1 text-[11px] font-semibold uppercase text-slate-400 tracking-wider">
-                      Quick Demo Switcher
+                  {isAccountMenuOpen && (
+                    <div
+                      role="menu"
+                      aria-label="Switch demo account"
+                      className="absolute right-0 top-12 z-50 w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-card"
+                    >
+                      <div className="px-2 py-2">
+                        <p className="text-xs font-semibold text-novaworks-navy">Quick account switch</p>
+                        <p className="mt-0.5 truncate text-[11px] text-slate-500">{currentUser.email}</p>
+                      </div>
+                      <div className="max-h-[min(60vh,26rem)] space-y-0.5 overflow-y-auto border-t border-slate-100 pt-2">
+                        {demoAccounts.map((account) => (
+                          <button
+                            key={account.email}
+                            type="button"
+                            role="menuitem"
+                            onClick={() => {
+                              setIsAccountMenuOpen(false);
+                              onQuickSwitchUser(account.email);
+                            }}
+                            className="flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs text-slate-700 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue"
+                          >
+                            <span className="truncate">{account.label}</span>
+                            <span className="shrink-0 rounded-full bg-novaworks-lavender px-2 py-0.5 text-[9px] font-bold tracking-wide text-novaworks-navy">
+                              {account.role}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="space-y-1 mt-1 max-h-72 overflow-y-auto">
-                      <button
-                        onClick={() => onQuickSwitchUser('admin@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Admin (Overview / Transcript)</span>
-                        <span className="text-[10px] text-rose-400 font-mono">ADMIN</span>
-                      </button>
-                      <div className="border-t border-slate-800 my-1"></div>
-                      <div className="px-2 text-[10px] text-slate-500 font-semibold">MANAGERS</div>
-                      <button
-                        onClick={() => onQuickSwitchUser('ayesha@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Ayesha Khan (Web PM)</span>
-                        <span className="text-[10px] text-amber-400 font-mono">PM01</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('bilal@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Bilal Ahmed (Mobile PM)</span>
-                        <span className="text-[10px] text-amber-400 font-mono">PM02</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('hina@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Hina Malik (AI PM)</span>
-                        <span className="text-[10px] text-amber-400 font-mono">PM03</span>
-                      </button>
-                      <div className="border-t border-slate-800 my-1"></div>
-                      <div className="px-2 text-[10px] text-slate-500 font-semibold">AGENTS</div>
-                      <button
-                        onClick={() => onQuickSwitchUser('ali@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Ali Raza (Full-Stack)</span>
-                        <span className="text-[10px] text-cyan-400 font-mono">DEV01</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('hamza@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Hamza Shah (Backend/API)</span>
-                        <span className="text-[10px] text-cyan-400 font-mono">DEV02</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('sara@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Sara Noor (Flutter)</span>
-                        <span className="text-[10px] text-cyan-400 font-mono">DEV03</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('usman@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Usman Tariq (Flutter QA)</span>
-                        <span className="text-[10px] text-cyan-400 font-mono">DEV04</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('zain@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Zain Abbas (AI Dev)</span>
-                        <span className="text-[10px] text-cyan-400 font-mono">DEV05</span>
-                      </button>
-                      <button
-                        onClick={() => onQuickSwitchUser('maryam@novaworks.example')}
-                        className="w-full text-left px-2.5 py-1.5 rounded text-xs text-slate-200 hover:bg-slate-800 flex items-center justify-between"
-                      >
-                        <span>Maryam Asif (AI Docs)</span>
-                        <span className="text-[10px] text-cyan-400 font-mono">DEV06</span>
-                      </button>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
-                {/* Logout Button */}
                 <button
+                  type="button"
                   onClick={onLogout}
-                  className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 transition"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                   title="Log out"
+                  aria-label="Log out"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="h-[18px] w-[18px]" />
                 </button>
-              </div>
-            ) : null}
+              </>
+            )}
           </div>
         </div>
+      </header>
 
-        {/* Mobile Navigation bar */}
-        {currentUser && (
-          <div className="flex md:hidden items-center justify-around py-2 border-t border-slate-800 text-xs">
-            <button
-              onClick={() => onSelectTab('projects')}
-              className={`px-3 py-1 rounded ${
-                currentTab === 'projects' ? 'text-cyan-400 font-semibold' : 'text-slate-400'
-              }`}
-            >
-              Projects
-            </button>
-            {currentUser.role === 'AGENT' && (
+      {currentUser && (
+        <>
+          <aside className="fixed bottom-0 left-0 top-16 z-30 hidden w-64 flex-col border-r border-slate-200 bg-white px-4 py-6 md:flex">
+            {navigation}
+            <div className="mt-auto rounded-2xl border border-novaworks-lavender-strong/70 bg-novaworks-lavender/60 p-4">
+              <div className="mb-2 flex items-center gap-2 text-novaworks-navy">
+                <Shield className="h-4 w-4" />
+                <span className="text-xs font-semibold">NovaWorks Workspace</span>
+              </div>
+              <p className="text-[11px] leading-relaxed text-slate-600">
+                Your workspace is tailored to your {currentUser.role.toLowerCase()} role.
+              </p>
+            </div>
+          </aside>
+
+          {isMobileMenuOpen && (
+            <div className="fixed inset-x-0 bottom-0 top-16 z-40 md:hidden">
               <button
-                onClick={() => onSelectTab('my-tasks')}
-                className={`px-3 py-1 rounded ${
-                  currentTab === 'my-tasks' ? 'text-cyan-400 font-semibold' : 'text-slate-400'
-                }`}
-              >
-                My Tasks
-              </button>
-            )}
-            {currentUser.role === 'ADMIN' && (
-              <button
-                onClick={() => onSelectTab('transcript')}
-                className={`px-3 py-1 rounded ${
-                  currentTab === 'transcript' ? 'text-cyan-400 font-semibold' : 'text-slate-400'
-                }`}
-              >
-                AI Transcript
-              </button>
-            )}
-            <button
-              onClick={() => onSelectTab('directory')}
-              className={`px-3 py-1 rounded ${
-                currentTab === 'directory' ? 'text-cyan-400 font-semibold' : 'text-slate-400'
-              }`}
-            >
-              Team
-            </button>
-          </div>
-        )}
-      </div>
-    </header>
+                type="button"
+                aria-label="Close navigation menu"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="absolute inset-0 h-full w-full bg-novaworks-navy/30 backdrop-blur-[2px]"
+              />
+              <aside className="relative flex h-full w-[min(19rem,85vw)] flex-col border-r border-slate-200 bg-white px-4 py-6 shadow-card">
+                {navigation}
+                <div className="mt-auto rounded-2xl border border-novaworks-lavender-strong/70 bg-novaworks-lavender/60 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-novaworks-navy">
+                    <Shield className="h-4 w-4" />
+                    <span className="text-xs font-semibold">NovaWorks Workspace</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-slate-600">
+                    Your workspace is tailored to your {currentUser.role.toLowerCase()} role.
+                  </p>
+                </div>
+              </aside>
+            </div>
+          )}
+        </>
+      )}
+    </>
   );
 };
+
+interface NavItemProps {
+  active: boolean;
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ active, icon, label, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-current={active ? 'page' : undefined}
+    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-novaworks-blue ${
+      active
+        ? 'bg-novaworks-lavender text-novaworks-navy shadow-sm'
+        : 'text-slate-600 hover:bg-slate-100 hover:text-novaworks-navy'
+    }`}
+  >
+    <span className={active ? 'text-novaworks-navy' : 'text-slate-400'}>{icon}</span>
+    {label}
+  </button>
+);
